@@ -6,7 +6,7 @@ function string2bool(str) {
     return String(str).toLowerCase() == "true";
 }
 
-function parse_client_id_key(str) {
+function parse_client_id_key(str, app_id, app_key) {
     ret = [];
 
     data = str.split(' ');
@@ -19,6 +19,9 @@ function parse_client_id_key(str) {
         }
         ret.push({appId:arr[0], key:arr[1]});
     })
+    if(app_id!=null && app_key!=null) {
+        ret.push({appId:app_id, key:app_key});
+    }    
     return ret;
 }
 
@@ -40,12 +43,13 @@ const allow_cors = string2bool(env.ALLOW_CORS) || true;
 const allow_origin = env.ALLOW_ORIGIN || "http://localhost:80";
 const allow_methods = env.ALLOW_METHODS || "GET, POST";
 const allow_headers = env.ALLOW_HEADERS || "Origin, Content-Type, X-Auth-Token, X-Requested-With, Accept, Authorization, X-CSRF-TOKEN, X-Socket-Id"
-
+const app_id = env.APP_ID || null;
+const app_key = env.APP_KEY || null;
 
 require('laravel-echo-server').run({
     authHost: authHost,
     authEndpoint: authEndpoint,
-    clients: parse_client_id_key(client_key),
+    clients: parse_client_id_key(client_key, app_id, app_key),
     database: database,
     databaseConfig: {
         redis: {
